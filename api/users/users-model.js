@@ -1,5 +1,4 @@
 const db = require('../../data/db-config')
-const { use } = require('./users-router')
 /**
   resolves to an ARRAY with all users, each user having { user_id, username }
  */
