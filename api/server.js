@@ -5,7 +5,6 @@ const usersRouter = require('./users/users-router')
 const authRouter = require('./auth/auth-router')
 const session = require('express-session')
 const Store = require('connect-session-knex')(session)
-const knex = require('../data/db-config')
 /**
   Do what needs to be done to support sessions with the `express-session` package!
   To respect users' privacy, do NOT send them a cookie unless they log in.
@@ -21,6 +20,10 @@ const knex = require('../data/db-config')
 
 const server = express();
 
+server.use(helmet());
+server.use(express.json());
+server.use(cors());
+
 
 server.use(session({
   name: 'chocolatechip',
@@ -28,10 +31,10 @@ server.use(session({
   saveUninitialized: false,
   resave: false,
   store: new Store({
-    knex,
+    knex: require('../data/db-config'),
     createTable: true,
     clearInterval: 1000 * 60 * 10,
-    tablename: 'session',
+    tablename: 'sessions',
     sidfieldname: 'sid',
   }),
   cookie: {
@@ -41,9 +44,7 @@ server.use(session({
     // sameSite: 'none'
   }
 }))
-server.use(helmet());
-server.use(express.json());
-server.use(cors());
+
 
 server.use('/api/users', usersRouter)
 server.use('/api/auth', authRouter)
