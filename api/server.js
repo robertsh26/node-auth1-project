@@ -4,7 +4,8 @@ const cors = require("cors");
 const usersRouter = require('./users/users-router')
 const authRouter = require('./auth/auth-router')
 const session = require('express-session')
-const Store = require('connect-session-knex')(session)
+let Store = require('connect-session-knex')
+Store = Store(session)
 /**
   Do what needs to be done to support sessions with the `express-session` package!
   To respect users' privacy, do NOT send them a cookie unless they log in.
@@ -28,6 +29,13 @@ server.use(cors());
 server.use(session({
   name: 'chocolatechip',
   secret: 'shh',
+  cookie: {
+    maxAge: 1000 * 60 * 10,
+    secure: false,
+    httpOnly: true,
+    // sameSite: 'none'
+  },
+  rolling: true,
   saveUninitialized: false,
   resave: false,
   store: new Store({
@@ -37,12 +45,6 @@ server.use(session({
     tablename: 'sessions',
     sidfieldname: 'sid',
   }),
-  cookie: {
-    maxAge: 1000 * 60 * 10,
-    secure: false,
-    httpOnly: true,
-    // sameSite: 'none'
-  }
 }))
 
 
