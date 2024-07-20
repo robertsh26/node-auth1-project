@@ -1,11 +1,10 @@
 const express = require("express");
 const helmet = require("helmet");
 const cors = require("cors");
-const usersRouter = require('./users/users-router')
-const authRouter = require('./auth/auth-router')
-const session = require('express-session')
-let Store = require('connect-session-knex')
-Store = Store(session)
+const usersRouter = require('./users/users-router');
+const authRouter = require('./auth/auth-router');
+const session = require("express-session");
+const Store = require("connect-session-knex")(session);
 /**
   Do what needs to be done to support sessions with the `express-session` package!
   To respect users' privacy, do NOT send them a cookie unless they log in.
@@ -21,10 +20,6 @@ Store = Store(session)
 
 const server = express();
 
-server.use(helmet());
-server.use(express.json());
-server.use(cors());
-
 
 server.use(session({
   name: 'chocolatechip',
@@ -35,7 +30,6 @@ server.use(session({
     httpOnly: true,
     // sameSite: 'none'
   },
-  rolling: true,
   saveUninitialized: false,
   resave: false,
   store: new Store({
@@ -45,7 +39,11 @@ server.use(session({
     tablename: 'sessions',
     sidfieldname: 'sid',
   }),
-}))
+}));
+
+server.use(helmet());
+server.use(express.json());
+server.use(cors());
 
 
 server.use('/api/users', usersRouter)
